@@ -651,7 +651,140 @@ const IMAGES = [
   "IMG_20260520_071050.jpg","IMG_20260520_071103.jpg","IMG_20260520_071105.jpg","IMG_20260520_071108.jpg",
   "IMG_20260520_071110.jpg","IMG_20260520_071954.jpg"
 ];
+let currentIndex = 0;
+let currentLayout = 2;
 
+// ── Init ─────────────────────────────────────────────────────────────────────
+document.getElementById('headerDate').textContent =
+  new Date().toLocaleDateString('en-PH', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+  });
+
+document.getElementById('countLabel').textContent = IMAGES.length;
+
+const grid = document.getElementById('grid');
+
+// ── Create Gallery ───────────────────────────────────────────────────────────
+IMAGES.forEach((name, i) => {
+
+  const card = document.createElement('div');
+  card.className = 'card';
+  card.dataset.index = i;
+
+  const img = document.createElement('img');
+
+  img.loading = 'lazy';
+  img.decoding = 'async';
+  img.alt = name;
+
+  // FIXED IMAGE PATH
+  img.src = "images/" + name;
+
+  // REMOVE BROKEN IMAGE ICON
+  img.onerror = () => {
+    card.style.display = 'none';
+  };
+
+  img.onload = () => {
+    card.classList.add('loaded');
+  };
+
+  const overlay = document.createElement('div');
+  overlay.className = 'card-overlay';
+
+  overlay.innerHTML = `
+    <span class="card-name">${name}</span>
+
+    <div class="card-actions">
+      <button class="btn-view" data-i="${i}" type="button">
+        View
+      </button>
+
+      <button class="btn-dl" data-name="${name}" type="button">
+        ↓ Save
+      </button>
+    </div>
+  `;
+
+  card.appendChild(img);
+  card.appendChild(overlay);
+  grid.appendChild(card);
+
+  // Touch support
+  card.addEventListener('touchstart', () => {
+
+    document.querySelectorAll('.card.touch-active')
+      .forEach(c => c.classList.remove('touch-active'));
+
+    card.classList.add('touch-active');
+
+  }, { passive: true });
+
+});
+
+// ── Reveal Animation ─────────────────────────────────────────────────────────
+const io = new IntersectionObserver((entries) => {
+
+  entries.forEach(e => {
+
+    if (e.isIntersecting) {
+
+      setTimeout(() => {
+        e.target.classList.add('visible');
+      }, 30);
+
+      io.unobserve(e.target);
+    }
+
+  });
+
+}, { threshold: 0.05 });
+
+document.querySelectorAll('.card').forEach(c => io.observe(c));
+
+// ── Button Events ────────────────────────────────────────────────────────────
+grid.addEventListener('click', e => {
+
+  const viewBtn = e.target.closest('.btn-view');
+  const dlBtn   = e.target.closest('.btn-dl');
+  const card    = e.target.closest('.card');
+
+  // VIEW BUTTON
+  if (viewBtn) {
+    e.stopPropagation();
+    openLightbox(parseInt(viewBtn.dataset.i));
+    return;
+  }
+
+  // DOWNLOAD BUTTON
+  if (dlBtn) {
+    e.stopPropagation();
+    triggerDownload(dlBtn.dataset.name);
+    return;
+  }
+
+  // CLICK IMAGE CARD
+  if (card) {
+    openLightbox(parseInt(card.dataset.index));
+  }
+
+});
+
+// ── Layout switcher ──────────────────────────────────────────────────────────
+function setLayout(n) {
+
+  currentLayout = n;
+
+  grid.className = 'grid layout-' + n;
+
+  document.querySelectorAll('.layout-btn')
+    .forEach(b => b.classList.remove('active'));
+
+  document.getElementById('btn' + n)
+    .classList.add('active');
+}
 <script>
 // ── Lightbox ─────────────────────────────────────────────────────────────────
 const lb     = document.getElementById('lightbox');
