@@ -672,7 +672,7 @@ IMAGES.forEach((name, i) => {
   img.loading = 'lazy';
   img.decoding = 'async';
   img.alt = name;
-  img.src = name; // same folder as the HTML file
+  img.src = "images/" + name;
   img.addEventListener('load', () => card.classList.add('loaded'));
 
   const overlay = document.createElement('div');
