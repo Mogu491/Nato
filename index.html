@@ -643,8 +643,8 @@ IMAGES.forEach((name, i) => {
   };
 
   img.onload = () => {
-    card.classList.add('loaded');
-  };
+  img.classList.add('loaded'); // ← sa IMG na, hindi sa card
+};
 
   const overlay = document.createElement('div');
   overlay.className = 'card-overlay';
