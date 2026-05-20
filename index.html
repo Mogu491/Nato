@@ -18,7 +18,6 @@
   }
 
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
   html { scroll-behavior: smooth; }
 
   body {
@@ -29,7 +28,6 @@
     overflow-x: hidden;
   }
 
-  /* Ambient background */
   body::before {
     content: '';
     position: fixed;
@@ -41,7 +39,6 @@
     z-index: 0;
   }
 
-  /* ---- HEADER ---- */
   header {
     position: relative;
     z-index: 10;
@@ -80,7 +77,6 @@
     letter-spacing: 0.15em;
   }
 
-  /* ---- TOOLBAR ---- */
   .toolbar {
     position: sticky;
     top: 0;
@@ -102,13 +98,9 @@
     color: var(--muted);
     margin-right: auto;
   }
-
   .count-badge span { color: var(--accent); font-weight: 400; }
 
-  .layout-btns {
-    display: flex;
-    gap: 4px;
-  }
+  .layout-btns { display: flex; gap: 4px; }
 
   .layout-btn {
     width: 32px; height: 32px;
@@ -126,10 +118,8 @@
     color: var(--accent);
     background: rgba(200,169,110,0.06);
   }
-
   .layout-btn svg { width: 14px; height: 14px; }
 
-  /* ---- GRID ---- */
   .gallery-wrap {
     position: relative;
     z-index: 1;
@@ -144,11 +134,9 @@
     grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
     transition: all 0.4s ease;
   }
-
   .grid.layout-2 { grid-template-columns: repeat(2, 1fr); gap: 6px; }
   .grid.layout-3 { grid-template-columns: repeat(3, 1fr); gap: 6px; }
   .grid.layout-4 { grid-template-columns: repeat(4, 1fr); gap: 8px; }
-  .grid.layout-masonry { columns: 2; column-gap: 8px; }
 
   @media(min-width: 480px) {
     .grid { grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); }
@@ -156,12 +144,11 @@
     .grid.layout-3 { grid-template-columns: repeat(3, 1fr); }
     .grid.layout-4 { grid-template-columns: repeat(4, 1fr); }
   }
-
   @media(min-width: 768px) {
     .grid { grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 10px; }
   }
 
-  /* ---- CARD ---- */
+  /* CARD — removed ::after shimmer that was blocking images */
   .card {
     position: relative;
     border-radius: 10px;
@@ -175,12 +162,6 @@
     transition: transform 0.35s cubic-bezier(0.22,1,0.36,1), opacity 0.35s ease, box-shadow 0.3s;
   }
 
-  .grid.layout-masonry .card {
-    aspect-ratio: unset;
-    break-inside: avoid;
-    margin-bottom: 8px;
-  }
-
   .card.visible { transform: translateY(0); opacity: 1; }
 
   .card:hover {
@@ -188,21 +169,37 @@
     z-index: 2;
   }
 
+  /* Skeleton shimmer shown while image loading */
+  .card-skeleton {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, #ece9e3 0%, #f5f3ef 50%, #ece9e3 100%);
+    background-size: 200% 100%;
+    animation: shimmer 1.8s infinite;
+    z-index: 0;
+  }
+
   .card img {
+    position: relative;
+    z-index: 1;
     width: 100%; height: 100%;
     object-fit: cover;
     display: block;
-    transition: transform 0.5s cubic-bezier(0.22,1,0.36,1);
+    opacity: 0;
+    transition: opacity 0.4s ease, transform 0.5s cubic-bezier(0.22,1,0.36,1);
   }
 
-  .grid.layout-masonry .card img { height: auto; }
+  .card img.loaded {
+    opacity: 1;
+  }
+  .card img.loaded ~ .card-skeleton { display: none; }
 
   .card:hover img { transform: scale(1.06); }
 
-  /* Hover overlay */
   .card-overlay {
     position: absolute;
     inset: 0;
+    z-index: 2;
     background: linear-gradient(180deg, transparent 40%, rgba(0,0,0,0.85) 100%);
     opacity: 0;
     transition: opacity 0.3s ease;
@@ -214,9 +211,7 @@
   }
 
   .card:hover .card-overlay,
-  .card.touch-active .card-overlay {
-    opacity: 1;
-  }
+  .card.touch-active .card-overlay { opacity: 1; }
 
   .card-name {
     font-size: 9px;
@@ -227,10 +222,7 @@
     text-overflow: ellipsis;
   }
 
-  .card-actions {
-    display: flex;
-    gap: 6px;
-  }
+  .card-actions { display: flex; gap: 6px; }
 
   .btn-view, .btn-dl {
     flex: 1;
@@ -245,7 +237,6 @@
     transition: all 0.2s;
     font-weight: 400;
   }
-
   .btn-view {
     background: rgba(255,255,255,0.12);
     color: var(--white);
@@ -259,7 +250,7 @@
   }
   .btn-dl:hover { background: #d4b87a; transform: scale(1.03); }
 
-  /* ---- LIGHTBOX ---- */
+  /* LIGHTBOX */
   .lightbox {
     position: fixed;
     inset: 0;
@@ -271,7 +262,6 @@
     opacity: 0;
     transition: opacity 0.35s ease;
   }
-
   .lightbox.open {
     pointer-events: all;
     opacity: 1;
@@ -293,7 +283,6 @@
     width: 100%;
     height: 100%;
     padding: 60px 16px 100px;
-    gap: 0;
   }
 
   .lb-img-wrap {
@@ -315,13 +304,11 @@
     opacity: 0;
     transition: transform 0.45s cubic-bezier(0.22,1,0.36,1), opacity 0.35s ease;
   }
-
   .lightbox.open .lb-img-wrap img {
     transform: scale(1);
     opacity: 1;
   }
 
-  /* Bottom bar */
   .lb-bar {
     position: fixed;
     bottom: 0; left: 0; right: 0;
@@ -370,7 +357,6 @@
   .lb-dl-btn:hover { background: #d4b87a; transform: scale(1.04); }
   .lb-dl-btn svg { width: 12px; height: 12px; }
 
-  /* Nav arrows */
   .lb-nav {
     position: fixed;
     top: 50%;
@@ -392,7 +378,6 @@
   .lb-nav.next { right: 10px; }
   .lb-nav svg { width: 18px; height: 18px; }
 
-  /* Close */
   .lb-close {
     position: fixed;
     top: 14px; right: 14px;
@@ -411,29 +396,6 @@
   .lb-close:hover { border-color: #ff5a5a; color: #ff5a5a; }
   .lb-close svg { width: 16px; height: 16px; }
 
-  /* ---- ANIMATIONS ---- */
-  @keyframes fadeDown {
-    from { opacity: 0; transform: translateY(-16px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
-
-  /* Shimmer skeleton */
-  .card::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.6) 50%, transparent 100%);
-    background-size: 200% 100%;
-    animation: shimmer 1.8s infinite;
-  }
-  .card img.loaded + .card::after, .card.loaded::after { display: none; }
-
-  @keyframes shimmer {
-    0%   { background-position: -200% 0; }
-    100% { background-position:  200% 0; }
-  }
-
-  /* Swipe hint on mobile */
   .swipe-hint {
     position: fixed;
     bottom: 90px; left: 50%;
@@ -447,26 +409,20 @@
     z-index: 3;
     pointer-events: none;
   }
+
+  @keyframes fadeDown {
+    from { opacity: 0; transform: translateY(-16px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes shimmer {
+    0%   { background-position: -200% 0; }
+    100% { background-position:  200% 0; }
+  }
   @keyframes hintFade {
     0%   { opacity: 0; }
     30%  { opacity: 1; }
     80%  { opacity: 1; }
     100% { opacity: 0; }
-  }
-
-  /* Pulse dot for download confirmation */
-  @keyframes pulse-ring {
-    0%   { transform: scale(1); opacity: 0.8; }
-    100% { transform: scale(1.8); opacity: 0; }
-  }
-
-  /* Empty state */
-  .empty {
-    text-align: center;
-    padding: 80px 24px;
-    color: var(--muted);
-    font-size: 12px;
-    letter-spacing: 0.1em;
   }
 </style>
 </head>
@@ -518,13 +474,13 @@
     </svg>
   </button>
 
-  <button class="lb-nav prev" id="lbPrev" onclick="navigate(-1)" title="Previous">
+  <button class="lb-nav prev" onclick="navigate(-1)" title="Previous">
     <svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8">
       <polyline points="11,4 6,9 11,14"/>
     </svg>
   </button>
 
-  <button class="lb-nav next" id="lbNext" onclick="navigate(1)" title="Next">
+  <button class="lb-nav next" onclick="navigate(1)" title="Next">
     <svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8">
       <polyline points="7,4 12,9 7,14"/>
     </svg>
@@ -542,11 +498,10 @@
     </button>
   </div>
 
-  <span class="swipe-hint" id="swipeHint">← swipe to navigate →</span>
+  <span class="swipe-hint">← swipe to navigate →</span>
 </div>
 
 <script>
-// ── Image list ──────────────────────────────────────────────────────────────
 const IMAGES = [
   "3270.jpg","3337.jpg","3338.jpg","3397.jpg",
   "downloaded_image.png (1).jpg","downloaded_image.png (2).jpg","downloaded_image.png.jpg",
@@ -655,7 +610,9 @@ const IMAGES = [
 let currentIndex = 0;
 let currentLayout = 2;
 
-// ── Init ─────────────────────────────────────────────────────────────────────
+// Base path — works for GitHub Pages subdir repos
+const BASE = "images/";
+
 document.getElementById('headerDate').textContent =
   new Date().toLocaleDateString('en-PH', { year:'numeric', month:'long', day:'numeric' });
 document.getElementById('countLabel').textContent = IMAGES.length;
@@ -667,12 +624,24 @@ IMAGES.forEach((name, i) => {
   card.className = 'card';
   card.dataset.index = i;
 
+  // skeleton
+  const skeleton = document.createElement('div');
+  skeleton.className = 'card-skeleton';
+
   const img = document.createElement('img');
   img.loading = 'lazy';
   img.decoding = 'async';
   img.alt = name;
-  img.src = "images/" + name;
-  img.addEventListener('load', () => card.classList.add('loaded'));
+  img.src = BASE + encodeURIComponent(name).replace(/%20/g, '%20');
+
+  img.addEventListener('load', () => {
+    img.classList.add('loaded');
+    skeleton.style.display = 'none';
+  });
+  img.addEventListener('error', () => {
+    skeleton.style.background = '#ece0d4';
+    skeleton.style.animation = 'none';
+  });
 
   const overlay = document.createElement('div');
   overlay.className = 'card-overlay';
@@ -683,6 +652,7 @@ IMAGES.forEach((name, i) => {
       <button class="btn-dl" data-name="${name}">↓ Save</button>
     </div>`;
 
+  card.appendChild(skeleton);
   card.appendChild(img);
   card.appendChild(overlay);
   grid.appendChild(card);
@@ -693,7 +663,7 @@ IMAGES.forEach((name, i) => {
   }, { passive: true });
 });
 
-// Stagger reveal
+// Stagger reveal via IntersectionObserver
 const io = new IntersectionObserver((entries) => {
   entries.forEach(e => {
     if (e.isIntersecting) {
@@ -705,18 +675,18 @@ const io = new IntersectionObserver((entries) => {
 
 document.querySelectorAll('.card').forEach(c => io.observe(c));
 
-// Event delegation
+// Event delegation — stopPropagation so view/dl don't also open card
 grid.addEventListener('click', e => {
   const viewBtn = e.target.closest('.btn-view');
   const dlBtn   = e.target.closest('.btn-dl');
   const card    = e.target.closest('.card');
 
-  if (viewBtn) { openLightbox(+viewBtn.dataset.i); return; }
-  if (dlBtn)   { triggerDownload(dlBtn.dataset.name); return; }
-  if (card)    { openLightbox(+card.dataset.index); }
+  if (viewBtn) { e.stopPropagation(); openLightbox(+viewBtn.dataset.i); return; }
+  if (dlBtn)   { e.stopPropagation(); triggerDownload(dlBtn.dataset.name); return; }
+  if (card && !e.target.closest('.card-overlay')) { openLightbox(+card.dataset.index); }
 });
 
-// ── Layout switcher ──────────────────────────────────────────────────────────
+// Layout
 function setLayout(n) {
   currentLayout = n;
   grid.className = 'grid layout-' + n;
@@ -724,7 +694,7 @@ function setLayout(n) {
   document.getElementById('btn' + n).classList.add('active');
 }
 
-// ── Lightbox ─────────────────────────────────────────────────────────────────
+// Lightbox
 const lb     = document.getElementById('lightbox');
 const lbImg  = document.getElementById('lbImg');
 const lbName = document.getElementById('lbName');
@@ -735,11 +705,6 @@ function openLightbox(i) {
   updateLightbox();
   lb.classList.add('open');
   document.body.style.overflow = 'hidden';
-
-  const hint = document.getElementById('swipeHint');
-  hint.style.animation = 'none';
-  void hint.offsetWidth;
-  hint.style.animation = '';
 }
 
 function closeLightbox() {
@@ -752,20 +717,22 @@ function updateLightbox() {
 
   lbImg.style.opacity = '0';
   lbImg.style.transform = 'scale(0.92)';
+  lbImg.style.transition = 'none';
 
   setTimeout(() => {
-    lbImg.src = "images/" + name;
+    lbImg.style.transition = '';
+    lbImg.src = BASE + encodeURIComponent(name).replace(/%20/g, '%20');
     lbImg.onload = () => {
       lbImg.style.opacity = '1';
       lbImg.style.transform = 'scale(1)';
     };
     lbImg.onerror = () => {
-      lbImg.src = "https://placehold.co/600x400?text=Image+Not+Found";
+      lbImg.src = 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="400" height="300"><rect fill="%23f0ede8" width="400" height="300"/><text x="50%" y="50%" text-anchor="middle" fill="%23aaa" font-size="14">Image not found</text></svg>';
     };
   }, 80);
 
   lbName.textContent = name;
-  lbCnt.textContent = `${currentIndex + 1} / ${IMAGES.length}`;
+  lbCnt.textContent  = `${currentIndex + 1} / ${IMAGES.length}`;
 }
 
 function navigate(dir) {
@@ -773,19 +740,29 @@ function navigate(dir) {
   updateLightbox();
 }
 
-// ── Download ─────────────────────────────────────────────────────────────────
+// Download — fetch as blob so browser saves the file properly
 function triggerDownload(filename) {
-  const a = document.createElement('a');
-  a.href = "images/" + filename;
-  a.download = filename;
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
+  const url = BASE + encodeURIComponent(filename).replace(/%20/g, '%20');
+  fetch(url)
+    .then(r => r.blob())
+    .then(blob => {
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      setTimeout(() => URL.revokeObjectURL(a.href), 3000);
+    })
+    .catch(() => {
+      // Fallback: open in new tab
+      window.open(url, '_blank');
+    });
 }
 
 function downloadCurrent() {
-  triggerDownload(IMAGES[currentIndex]);
   const btn = document.getElementById('lbDlBtn');
+  triggerDownload(IMAGES[currentIndex]);
   const orig = btn.innerHTML;
   btn.innerHTML = '✓ Saved!';
   btn.style.background = '#4caf82';
@@ -795,27 +772,24 @@ function downloadCurrent() {
   }, 1800);
 }
 
-// ── Keyboard ─────────────────────────────────────────────────────────────────
+// Keyboard
 document.addEventListener('keydown', e => {
   if (!lb.classList.contains('open')) return;
-  if (e.key === 'Escape')                   closeLightbox();
-  if (e.key === 'ArrowLeft')                navigate(-1);
-  if (e.key === 'ArrowRight')               navigate(1);
-  if (e.key === 'd' || e.key === 'D')       downloadCurrent();
+  if (e.key === 'Escape')             closeLightbox();
+  if (e.key === 'ArrowLeft')          navigate(-1);
+  if (e.key === 'ArrowRight')         navigate(1);
+  if (e.key === 'd' || e.key === 'D') downloadCurrent();
 });
 
-// ── Touch swipe ───────────────────────────────────────────────────────────────
+// Touch swipe in lightbox
 let touchX = null;
-
-lb.addEventListener('touchstart', e => {
-  touchX = e.touches[0].clientX;
-}, { passive: true });
-
+lb.addEventListener('touchstart', e => { touchX = e.touches[0].clientX; }, { passive: true });
 lb.addEventListener('touchend', e => {
   if (touchX === null) return;
   const dx = e.changedTouches[0].clientX - touchX;
   if (Math.abs(dx) > 50) navigate(dx < 0 ? 1 : -1);
   touchX = null;
 });
+</script>
 </body>
-</html> 
+</html>
