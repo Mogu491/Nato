@@ -687,14 +687,13 @@ IMAGES.forEach((name, i) => {
   card.appendChild(overlay);
   grid.appendChild(card);
 
-  // Touch tap support for overlay reveal
   card.addEventListener('touchstart', () => {
     document.querySelectorAll('.card.touch-active').forEach(c => c.classList.remove('touch-active'));
     card.classList.add('touch-active');
   }, { passive: true });
 });
 
-// Stagger reveal with IntersectionObserver
+// Stagger reveal
 const io = new IntersectionObserver((entries) => {
   entries.forEach(e => {
     if (e.isIntersecting) {
@@ -706,7 +705,7 @@ const io = new IntersectionObserver((entries) => {
 
 document.querySelectorAll('.card').forEach(c => io.observe(c));
 
-// Event delegation for card buttons
+// Event delegation
 grid.addEventListener('click', e => {
   const viewBtn = e.target.closest('.btn-view');
   const dlBtn   = e.target.closest('.btn-dl');
@@ -725,7 +724,6 @@ function setLayout(n) {
   document.getElementById('btn' + n).classList.add('active');
 }
 
-<script>
 // ── Lightbox ─────────────────────────────────────────────────────────────────
 const lb     = document.getElementById('lightbox');
 const lbImg  = document.getElementById('lbImg');
@@ -734,13 +732,10 @@ const lbCnt  = document.getElementById('lbCounter');
 
 function openLightbox(i) {
   currentIndex = i;
-
   updateLightbox();
-
   lb.classList.add('open');
   document.body.style.overflow = 'hidden';
 
-  // Show swipe hint once
   const hint = document.getElementById('swipeHint');
   hint.style.animation = 'none';
   void hint.offsetWidth;
@@ -759,19 +754,14 @@ function updateLightbox() {
   lbImg.style.transform = 'scale(0.92)';
 
   setTimeout(() => {
-    // FIXED IMAGE PATH
     lbImg.src = "images/" + name;
-
     lbImg.onload = () => {
       lbImg.style.opacity = '1';
       lbImg.style.transform = 'scale(1)';
     };
-
-    // OPTIONAL ERROR FALLBACK
     lbImg.onerror = () => {
-      lbImg.src = "https://via.placeholder.com/600x400?text=Image+Not+Found";
+      lbImg.src = "https://placehold.co/600x400?text=Image+Not+Found";
     };
-
   }, 80);
 
   lbName.textContent = name;
@@ -785,30 +775,20 @@ function navigate(dir) {
 
 // ── Download ─────────────────────────────────────────────────────────────────
 function triggerDownload(filename) {
-
   const a = document.createElement('a');
-
-  // FIXED DOWNLOAD PATH
   a.href = "images/" + filename;
-
   a.download = filename;
-
   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);
 }
 
 function downloadCurrent() {
-
   triggerDownload(IMAGES[currentIndex]);
-
-  // Button feedback
   const btn = document.getElementById('lbDlBtn');
   const orig = btn.innerHTML;
-
   btn.innerHTML = '✓ Saved!';
   btn.style.background = '#4caf82';
-
   setTimeout(() => {
     btn.innerHTML = orig;
     btn.style.background = '';
@@ -817,27 +797,14 @@ function downloadCurrent() {
 
 // ── Keyboard ─────────────────────────────────────────────────────────────────
 document.addEventListener('keydown', e => {
-
   if (!lb.classList.contains('open')) return;
-
-  if (e.key === 'Escape') {
-    closeLightbox();
-  }
-
-  if (e.key === 'ArrowLeft') {
-    navigate(-1);
-  }
-
-  if (e.key === 'ArrowRight') {
-    navigate(1);
-  }
-
-  if (e.key === 'd' || e.key === 'D') {
-    downloadCurrent();
-  }
+  if (e.key === 'Escape')                   closeLightbox();
+  if (e.key === 'ArrowLeft')                navigate(-1);
+  if (e.key === 'ArrowRight')               navigate(1);
+  if (e.key === 'd' || e.key === 'D')       downloadCurrent();
 });
 
-// ── Touch swipe in lightbox ─────────────────────────────────────────────────
+// ── Touch swipe ───────────────────────────────────────────────────────────────
 let touchX = null;
 
 lb.addEventListener('touchstart', e => {
@@ -845,17 +812,10 @@ lb.addEventListener('touchstart', e => {
 }, { passive: true });
 
 lb.addEventListener('touchend', e => {
-
   if (touchX === null) return;
-
   const dx = e.changedTouches[0].clientX - touchX;
-
-  if (Math.abs(dx) > 50) {
-    navigate(dx < 0 ? 1 : -1);
-  }
-
+  if (Math.abs(dx) > 50) navigate(dx < 0 ? 1 : -1);
   touchX = null;
 });
-</script>
 </body>
 </html> 
